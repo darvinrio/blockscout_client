@@ -175,11 +175,39 @@ blockscout token info 0xdAC17F958D2ee523a2206206994597C13D831ec7
 echo -e "\nToken Statistics:"
 blockscout token counters 0xdAC17F958D2ee523a2206206994597C13D831ec7
 
-# 3. Get top holders (CSV for analysis)
+# 3. Get top 100 holders (CSV for analysis)
 echo -e "\nExporting top holders to CSV..."
 blockscout token holders 0xdAC17F958D2ee523a2206206994597C13D831ec7 --format csv > usdt_holders.csv
 
 # 4. Get recent transfers
 echo -e "\nRecent transfers:"
 blockscout token transfers 0xdAC17F958D2ee523a2206206994597C13D831ec7 --format table
+```
+
+Holder Analysis
+
+```bash
+# Get first 100 holders (default)
+blockscout token holders 0xdAC17F958D2ee523a2206206994597C13D831ec7
+
+# Get specific number of holders
+blockscout token holders 0xdAC17F958D2ee523a2206206994597C13D831ec7 --limit 500
+
+# Get ALL holders (may take time for popular tokens)
+blockscout token holders 0xdAC17F958D2ee523a2206206994597C13D831ec7 --all
+
+# Save all holders to CSV directly
+blockscout token holders 0xdAC17F958D2ee523a2206206994597C13D831ec7 --all --save-to usdt_holders.csv
+
+# Browse holders page by page interactively
+blockscout token holders-interactive 0xdAC17F958D2ee523a2206206994597C13D831ec7
+
+# Export all holders to CSV
+blockscout token export-holders 0xdAC17F958D2ee523a2206206994597C13D831ec7 -o all_holders.csv
+
+# Export max 10,000 holders
+blockscout token export-holders 0xdAC17F958D2ee523a2206206994597C13D831ec7 -o top_holders.csv --max-holders 10000
+
+# Export only holders with balance >= 1000 tokens
+blockscout token export-holders 0xdAC17F958D2ee523a2206206994597C13D831ec7 -o whale_holders.csv --min-balance 1000
 ```
