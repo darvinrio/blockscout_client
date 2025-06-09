@@ -1,5 +1,6 @@
 # Blockscout Client
 
+Its not fully tested.
 AI generated based on: [Swagger File](https://raw.githubusercontent.com/blockscout/blockscout-api-v2-swagger/main/swagger.yaml)
 also attached to source code
 
