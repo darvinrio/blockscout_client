@@ -63,6 +63,11 @@ class AddressParam(BaseBlockScoutModel):
     public_tags: List[AddressTag] = Field(default_factory=list)
     is_verified: bool
 
+    implementations: Optional[List] = None
+    is_scam: Optional[bool] = None
+    proxy_type: Optional[str] = None
+    watchlist_address_id: Optional[str] = None
+
 
 class TokenInfo(BaseBlockScoutModel):
     """Token information - moved here to avoid circular imports"""

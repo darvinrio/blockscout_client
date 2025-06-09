@@ -16,10 +16,10 @@ class OutputFormatter:
     """Base output formatter"""
 
     @staticmethod
-    def format_table(data: List[Dict[str, Any]], title: str = None) -> str:
-        """Format data as a table"""
+    def format_table(data: List[Dict[str, Any]], title: str = None) -> Table:
+        """Format data as a Rich Table object"""
         if not data:
-            return "No data found."
+            return Table(title="No data found.")
 
         # Ensure data is a list of dictionaries
         if not isinstance(data, list):
@@ -33,11 +33,10 @@ class OutputFormatter:
             elif isinstance(item, dict):
                 processed_data.append(item)
             else:
-                # Handle other types by converting to string representation
                 processed_data.append({"value": str(item)})
 
         if not processed_data:
-            return "No data found."
+            return Table(title="No data found.")
 
         # Create rich table
         table = Table(title=title, show_header=True, header_style="bold magenta")
@@ -45,7 +44,7 @@ class OutputFormatter:
         # Add columns
         first_item = processed_data[0]
         for key in first_item.keys():
-            table.add_column(str(key), style="cyan", no_wrap=False)
+            table.add_column(str(key), style="cyan", no_wrap=True)
 
         # Add rows
         for item in processed_data:
@@ -56,15 +55,13 @@ class OutputFormatter:
                     # Truncate complex objects
                     str_value = str(value)
                     row.append(
-                        str_value[:50] + "..." if len(str_value) > 50 else str_value
+                        str_value[:30] + "..." if len(str_value) > 30 else str_value
                     )
                 else:
                     row.append(str(value) if value is not None else "")
             table.add_row(*row)
 
-        with console.capture() as capture:
-            console.print(table)
-        return capture.get()
+        return table
 
     @staticmethod
     def format_json(
@@ -118,35 +115,15 @@ class OutputFormatter:
             writer.writerow(csv_row)
         return output.getvalue()
 
-    @staticmethod
-    def format_simple_table(data: List[Dict[str, Any]]) -> str:
-        """Format data as simple ASCII table"""
-        if not data:
-            return "No data found."
 
-        # Convert Pydantic models to dicts if needed
-        processed_data = []
-        for item in data:
-            if hasattr(item, "to_dict"):
-                processed_data.append(item.to_dict())
-            elif isinstance(item, dict):
-                processed_data.append(item)
-            else:
-                processed_data.append({"value": str(item)})
-
-        return tabulate(processed_data, headers="keys", tablefmt="grid")
-
-
-def format_output(data: Any, format_type: str, title: str = None) -> str:
+def format_output(data: Any, format_type: str, title: str = None) -> Union[str, Table]:
     """Format output based on type"""
     formatter = OutputFormatter()
 
     # Convert Pydantic models to dicts
     if hasattr(data, "to_dict"):
-        # Single model
         converted_data = data.to_dict()
     elif hasattr(data, "__iter__") and not isinstance(data, (str, dict)):
-        # List of models or other iterable
         try:
             converted_data = []
             for item in data:
@@ -157,13 +134,10 @@ def format_output(data: Any, format_type: str, title: str = None) -> str:
                 else:
                     converted_data.append({"value": str(item)})
         except (TypeError, AttributeError):
-            # Fallback for non-iterable or other issues
             converted_data = [{"value": str(data)}]
     elif isinstance(data, dict):
-        # Already a dict
         converted_data = data
     else:
-        # Other types, wrap in dict
         converted_data = {"value": str(data)}
 
     # Format based on requested type

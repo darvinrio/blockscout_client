@@ -181,9 +181,56 @@ class BlockScoutClient:
         data = self._make_request(f"/tokens/{address_hash}")
         return TokenInfo(**data)
 
-    def get_token_holders(self, address_hash: str) -> PaginatedResponse:
-        """Get token holders"""
-        data = self._make_request(f"/tokens/{address_hash}/holders")
+    def get_token_holders(
+        self, address_hash: str, limit: Optional[int] = None, all_pages: bool = False
+    ) -> PaginatedResponse:
+        """
+        Get token holders with pagination support
+
+        Args:
+            address_hash: Token contract address
+            limit: Maximum number of holders to return (None for API default)
+            all_pages: If True, fetch all pages of results
+        """
+        all_holders = []
+        next_page_params = None
+
+        while True:
+            # Make request with pagination params
+            params = {}
+            if next_page_params:
+                params.update(next_page_params)
+
+            data = self._make_request(f"/tokens/{address_hash}/holders", params)
+            holders = [Holder(**item) for item in data.get("items", [])]
+
+            all_holders.extend(holders)
+
+            # Check if we should continue fetching
+            next_page_params = data.get("next_page_params")
+
+            if not all_pages or not next_page_params or not holders:
+                break
+
+            if limit and len(all_holders) >= limit:
+                all_holders = all_holders[:limit]
+                break
+
+        # Apply limit if specified
+        if limit and len(all_holders) > limit:
+            all_holders = all_holders[:limit]
+
+        return PaginatedResponse(
+            items=all_holders,
+            next_page_params=next_page_params if not all_pages else None,
+        )
+
+    def get_token_holders_paginated(
+        self, address_hash: str, page_params: Optional[Dict] = None
+    ) -> PaginatedResponse:
+        """Get single page of token holders"""
+        params = page_params or {}
+        data = self._make_request(f"/tokens/{address_hash}/holders", params)
         holders = [Holder(**item) for item in data.get("items", [])]
 
         return PaginatedResponse(

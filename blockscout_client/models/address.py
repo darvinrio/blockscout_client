@@ -1,10 +1,14 @@
 """Address-related models"""
 
 from typing import List, Optional, TYPE_CHECKING
-from pydantic import Field
-
-from blockscout_client.models.token import TokenInfo
-from .base import BaseBlockScoutModel, AddressTag, WatchlistName, AddressParam
+from pydantic import Field, ConfigDict
+from .base import (
+    BaseBlockScoutModel,
+    AddressTag,
+    TokenInfo,
+    WatchlistName,
+    AddressParam,
+)
 
 if TYPE_CHECKING:
     from .token import Token
@@ -12,6 +16,8 @@ if TYPE_CHECKING:
 
 class Address(AddressParam):
     """Full address model"""
+
+    model_config = ConfigDict(populate_by_name=True)
 
     creator_address_hash: Optional[str] = None
     creation_transaction_hash: Optional[str] = None

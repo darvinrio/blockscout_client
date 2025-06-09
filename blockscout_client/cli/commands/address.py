@@ -49,7 +49,11 @@ def info(ctx, address_hash, output_format, debug):
             output = format_output(
                 address, format_type, f"Address Info: {address_hash}"
             )
-            console.print(output)
+            # Check if it's a Rich Table object or string
+            if hasattr(output, "add_row"):  # It's a Rich Table
+                console.print(output)
+            else:  # It's a string (JSON/CSV)
+                console.print(output)
 
     except BlockScoutError as e:
         console.print(f"❌ Error: {e}", style="red")
