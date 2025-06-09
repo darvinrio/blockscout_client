@@ -1,19 +1,43 @@
 """Models package"""
 
-from .base import BaseBlockScoutModel, PaginatedResponse
+# Import base models first
+from .base import (
+    BaseBlockScoutModel,
+    PaginatedResponse,
+    AddressTag,
+    WatchlistName,
+    AddressParam,
+    TokenInfo,
+)
+
+# Import other models
 from .address import *
 from .transaction import *
 from .token import *
 from .block import *
 from .search import *
 
-# Update forward references
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    pass
-else:
-    # Update forward references for circular imports
-    TokenTransfer.model_rebuild()
-    Transaction.model_rebuild()
-    NFTInstance.model_rebuild()
-    Address.model_rebuild()
+
+# Rebuild models to resolve forward references
+def _rebuild_models():
+    """Rebuild models to resolve forward references"""
+    import sys
+    from pydantic import BaseModel
+
+    current_module = sys.modules[__name__]
+
+    for name in dir(current_module):
+        obj = getattr(current_module, name)
+        if (
+            isinstance(obj, type)
+            and issubclass(obj, BaseModel)
+            and obj is not BaseModel
+        ):
+            try:
+                obj.model_rebuild()
+            except Exception:
+                pass  # Some models might not need rebuilding
+
+
+# Rebuild models after all imports
+_rebuild_models()

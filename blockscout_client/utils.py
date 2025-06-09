@@ -3,30 +3,35 @@
 import pandas as pd
 from typing import List, Any, Optional
 
+
 def to_pandas_dataframe(items: List[Any]) -> pd.DataFrame:
     """Convert list of Pydantic models to pandas DataFrame"""
     if not items:
         return pd.DataFrame()
-    
+
     # Convert to list of dicts
-    data = [item.to_dict() if hasattr(item, 'to_dict') else item for item in items]
+    data = [item.to_dict() if hasattr(item, "to_dict") else item for item in items]
     return pd.DataFrame(data)
 
-def to_polars_dataframe(items: List[Any]) -> 'pl.DataFrame':
+
+def to_polars_dataframe(items: List[Any]) -> "pl.DataFrame":
     """Convert list of Pydantic models to polars DataFrame"""
     try:
         import polars as pl
     except ImportError:
-        raise ImportError("polars is required for this function. Install with: pip install polars")
-    
+        raise ImportError(
+            "polars is required for this function. Install with: pip install polars"
+        )
+
     if not items:
         return pl.DataFrame()
-    
+
     # Convert to list of dicts
-    data = [item.to_dict() if hasattr(item, 'to_dict') else item for item in items]
+    data = [item.to_dict() if hasattr(item, "to_dict") else item for item in items]
     return pl.DataFrame(data)
 
-def flatten_nested_dict(data: dict, parent_key: str = '', sep: str = '_') -> dict:
+
+def flatten_nested_dict(data: dict, parent_key: str = "", sep: str = "_") -> dict:
     """Flatten nested dictionary for DataFrame compatibility"""
     items = []
     for k, v in data.items():

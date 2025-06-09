@@ -18,7 +18,9 @@ transactions_response = client.get_transactions(filter_type="validated")
 transactions_df = pd.DataFrame([tx.to_dict() for tx in transactions_response.items])
 
 # Get token balances
-balances = client.get_address_token_balances("0x742d35Cc64C5E2e01b17a2CC7375654e7E3E1Ab9")
+balances = client.get_address_token_balances(
+    "0x742d35Cc64C5E2e01b17a2CC7375654e7E3E1Ab9"
+)
 balances_df = pd.DataFrame([balance.to_dict() for balance in balances])
 
 # Close client

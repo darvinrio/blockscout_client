@@ -1,6 +1,7 @@
 # Blockscout Client
 
 AI generated based on: [Swagger File](https://raw.githubusercontent.com/blockscout/blockscout-api-v2-swagger/main/swagger.yaml)
+also attached to source code
 
 ## client usage example
 
@@ -68,6 +69,20 @@ blockscout search redirect "0x742d35Cc64C5E2e01b17a2CC7375654e7E3E1Ab9"
 ## Output in different formats
 blockscout search query "USDT" --format json
 blockscout search query "USDT" --format csv
+```
+
+Help
+
+```bash
+# Show all token commands
+blockscout token --help
+
+# Commands available:
+# - list      List tokens with optional filtering
+# - info      Get detailed token information  
+# - holders   Get token holders list
+# - transfers Get token transfer history
+# - counters  Get token statistics (holder count, transfer count)
 ```
 
 Address Commands
@@ -144,4 +159,27 @@ blockscout search query "USDT" --format json > search_results.json
 
 ## Use with other tools
 blockscout address tokens 0x742d35Cc64C5E2e01b17a2CC7375654e7E3E1Ab9 --format csv | head -10
+```
+
+Token Analysis Example
+
+```bash
+# Analyze USDT token completely
+echo "=== USDT Token Analysis ==="
+
+# 1. Get token info
+echo "Token Information:"
+blockscout token info 0xdAC17F958D2ee523a2206206994597C13D831ec7
+
+# 2. Get counters
+echo -e "\nToken Statistics:"
+blockscout token counters 0xdAC17F958D2ee523a2206206994597C13D831ec7
+
+# 3. Get top holders (CSV for analysis)
+echo -e "\nExporting top holders to CSV..."
+blockscout token holders 0xdAC17F958D2ee523a2206206994597C13D831ec7 --format csv > usdt_holders.csv
+
+# 4. Get recent transfers
+echo -e "\nRecent transfers:"
+blockscout token transfers 0xdAC17F958D2ee523a2206206994597C13D831ec7 --format table
 ```

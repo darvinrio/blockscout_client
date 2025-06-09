@@ -1,25 +1,278 @@
-# setup.py
-from setuptools import setup, find_packages
+[build-system]
+requires = ["hatchling>=1.13.0"]
+build-backend = "hatchling.build"
 
-setup(
-    name="blockscout-client",
-    version="1.0.0",
-    packages=find_packages(),
-    install_requires=[
-        "httpx>=0.24.0",
-        "pydantic>=2.0.0",
-        "click>=8.0.0",
-        "rich>=13.0.0",
-        "pandas>=1.5.0",
-        "tabulate>=0.9.0",
-        "pyyaml>=6.0",
-    ],
-    extras_require={
-        "polars": ["polars>=0.18.0"],
-    },
-    entry_points={
-        "console_scripts": [
-            "blockscout=blockscout_client.cli.main:cli",
-        ],
-    },
-)
+[project]
+name = "blockscout-client"
+version = "1.0.0"
+description = "Python client and CLI for BlockScout API"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Your Name", email = "your.email@example.com" },
+]
+maintainers = [
+    { name = "Your Name", email = "your.email@example.com" },
+]
+keywords = [
+    "blockchain",
+    "ethereum",
+    "blockscout",
+    "api",
+    "cli",
+    "web3",
+    "crypto",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Office/Business :: Financial",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "httpx>=0.24.0",
+    "pydantic>=2.0.0,<3.0.0",
+    "click>=8.0.0",
+    "rich>=13.0.0",
+    "pandas>=1.5.0",
+    "tabulate>=0.9.0",
+    "pyyaml>=6.0",
+    "typing-extensions>=4.0.0; python_version<'3.10'",
+]
+
+[project.optional-dependencies]
+# Performance optimizations
+polars = ["polars>=0.18.0"]
+
+# Development dependencies
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+    "tox>=4.0.0",
+]
+
+# Testing dependencies
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx[test]>=0.24.0",
+    "responses>=0.23.0",
+]
+
+# Documentation dependencies
+docs = [
+    "mkdocs>=1.4.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.20.0",
+    "mike>=1.1.0",
+]
+
+# Async support
+async = [
+    "httpx[http2]>=0.24.0",
+]
+
+# All optional dependencies
+all = [
+    "polars>=0.18.0",
+    "httpx[http2]>=0.24.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/blockscout-client"
+Documentation = "https://blockscout-client.readthedocs.io"
+Repository = "https://github.com/yourusername/blockscout-client.git"
+Issues = "https://github.com/yourusername/blockscout-client/issues"
+Changelog = "https://github.com/yourusername/blockscout-client/blob/main/CHANGELOG.md"
+
+[project.scripts]
+blockscout = "blockscout_client.cli.main:cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["blockscout_client"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/blockscout_client",
+    "/tests",
+    "/docs",
+    "/README.md",
+    "/LICENSE",
+    "/CHANGELOG.md",
+]
+
+# Black configuration
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# isort configuration
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["blockscout_client"]
+known_third_party = [
+    "click",
+    "httpx",
+    "pandas",
+    "polars",
+    "pydantic",
+    "pytest",
+    "rich",
+    "yaml",
+]
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pandas.*",
+    "polars.*",
+    "tabulate.*",
+    "yaml.*",
+]
+ignore_missing_imports = true
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=blockscout_client",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow running tests",
+    "network: Tests that require network access",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["blockscout_client"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+# Ruff configuration (modern alternative to flake8)
+[tool.ruff]
+target-version = "py38"
+line-length = 88
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.ruff.isort]
+known-first-party = ["blockscout_client"]

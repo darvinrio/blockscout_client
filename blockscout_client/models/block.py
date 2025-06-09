@@ -1,16 +1,19 @@
 """Block-related models"""
 
 from typing import List, Optional
-from .base import BaseBlockScoutModel
-from .address import AddressParam
+from .base import BaseBlockScoutModel, AddressParam
+
 
 class Reward(BaseBlockScoutModel):
     """Block reward"""
+
     reward: int
     type: str  # "Miner Reward" | "Emission Reward" | "Chore Reward" | "Uncle Reward"
 
+
 class Block(BaseBlockScoutModel):
     """Block model"""
+
     base_fee_per_gas: Optional[str] = None
     burnt_fees: Optional[str] = None
     burnt_fees_percentage: Optional[float] = None
@@ -37,8 +40,10 @@ class Block(BaseBlockScoutModel):
     uncles_hashes: List[str] = []
     withdrawals_count: Optional[int] = None
 
+
 class Withdrawal(BaseBlockScoutModel):
     """Withdrawal model"""
+
     index: int
     amount: str
     validator_index: int
