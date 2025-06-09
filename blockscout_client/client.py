@@ -181,6 +181,29 @@ class BlockScoutClient:
         data = self._make_request(f"/tokens/{address_hash}")
         return TokenInfo(**data)
 
+    def get_token_holders(self, address_hash: str) -> PaginatedResponse:
+        """Get token holders"""
+        data = self._make_request(f"/tokens/{address_hash}/holders")
+        holders = [Holder(**item) for item in data.get("items", [])]
+
+        return PaginatedResponse(
+            items=holders, next_page_params=data.get("next_page_params")
+        )
+
+    def get_token_token_transfers(self, address_hash: str) -> PaginatedResponse:
+        """Get token transfers for a specific token"""
+        data = self._make_request(f"/tokens/{address_hash}/transfers")
+        transfers = [TokenTransfer(**item) for item in data.get("items", [])]
+
+        return PaginatedResponse(
+            items=transfers, next_page_params=data.get("next_page_params")
+        )
+
+    def get_token_counters(self, address_hash: str) -> TokenCounters:
+        """Get token counters"""
+        data = self._make_request(f"/tokens/{address_hash}/counters")
+        return TokenCounters(**data)
+
     def close(self):
         """Close the HTTP client"""
         self.client.close()
