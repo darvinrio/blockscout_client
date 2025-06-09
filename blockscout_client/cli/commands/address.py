@@ -24,8 +24,9 @@ def address_group():
     type=click.Choice(["table", "json", "csv"]),
     help="Output format (overrides config)",
 )
+@click.option("--debug", is_flag=True, help="Show debug information")
 @click.pass_context
-def info(ctx, address_hash, output_format):
+def info(ctx, address_hash, output_format, debug):
     """Get address information"""
     config = ctx.obj["config"]
     format_type = output_format or config.output_format
@@ -35,6 +36,16 @@ def info(ctx, address_hash, output_format):
             with console.status(f"Fetching address info for {address_hash}..."):
                 address = client.get_address(address_hash)
 
+            if debug:
+                console.print(f"[yellow]Debug: Address type: {type(address)}[/yellow]")
+                console.print(
+                    f"[yellow]Debug: Has to_dict: {hasattr(address, 'to_dict')}[/yellow]"
+                )
+                if hasattr(address, "to_dict"):
+                    console.print(
+                        f"[yellow]Debug: Dict keys: {list(address.to_dict().keys())}[/yellow]"
+                    )
+
             output = format_output(
                 address, format_type, f"Address Info: {address_hash}"
             )
@@ -42,6 +53,13 @@ def info(ctx, address_hash, output_format):
 
     except BlockScoutError as e:
         console.print(f"❌ Error: {e}", style="red")
+        raise click.Abort()
+    except Exception as e:
+        console.print(f"❌ Unexpected error: {e}", style="red")
+        if debug:
+            import traceback
+
+            console.print(traceback.format_exc())
         raise click.Abort()
 
 

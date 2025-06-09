@@ -1,20 +1,23 @@
 """Base model classes"""
 
 from typing import Any, Dict, List, Optional, Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
 
 class BaseBlockScoutModel(BaseModel):
     """Base model with common functionality"""
 
-    class Config:
-        allow_population_by_field_name = True
-        use_enum_values = True
+    model_config = ConfigDict(
+        populate_by_name=True,  # Renamed from allow_population_by_field_name
+        use_enum_values=True,
+        validate_assignment=True,
+        extra="forbid",
+    )
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert model to dictionary"""
-        return self.dict(by_alias=True, exclude_none=True)
+        return self.model_dump(by_alias=True, exclude_none=True)
 
     @classmethod
     def to_dataframe_dict(
